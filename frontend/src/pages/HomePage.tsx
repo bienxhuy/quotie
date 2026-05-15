@@ -24,7 +24,7 @@ export default function HomePage() {
   };
 
   const handleQuotePageClick = () => {
-    navigate(isAuthenticated ? "/quotes" : "/login");
+    navigate("/quotes");
   };
 
   const greeting = isAuthenticated
