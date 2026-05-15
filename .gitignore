@@ -64,3 +64,4 @@ Thumbs.db
 # pnpm-lock.yaml
 
 guide/
+**/guide/
