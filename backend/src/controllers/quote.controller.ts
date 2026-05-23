@@ -12,8 +12,11 @@ export class QuoteController {
 
   getQuotes = async (req: Request, res: Response): Promise<void> => {
     try {
-      const page = Number(req.query.page ?? 1);
-      const limit = Number(req.query.limit ?? 10);
+      const rawPage = req.query.page;
+      const rawLimit = req.query.limit;
+
+      const page = rawPage !== undefined ? parseInt(rawPage as string, 10) : 1;
+      const limit = rawLimit !== undefined ? parseInt(rawLimit as string, 10) : 10;
 
       if (!Number.isInteger(page) || page <= 0 || !Number.isInteger(limit) || limit <= 0 || limit > 100) {
         res.status(400).json({

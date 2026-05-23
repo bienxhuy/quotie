@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.service";
 import { User } from "../entities/User";
+import { parseExpiresIn } from "../utils/parse-expires-in";
 
 export class AuthController {
   private authService: AuthService;
@@ -22,6 +23,23 @@ export class AuthController {
         res.status(400).json({
           status: "error",
           message: "Name, email, and password are required",
+        });
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        res.status(400).json({
+          status: "error",
+          message: "Invalid email format",
+        });
+        return;
+      }
+
+      if (password.length < 6) {
+        res.status(400).json({
+          status: "error",
+          message: "Password must be at least 6 characters",
         });
         return;
       }
@@ -240,12 +258,22 @@ export class AuthController {
    * Set refresh token cookie
    */
   private setRefreshTokenCookie(res: Response, refreshToken: string): void {
+    const expiresIn = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
+
+    let maxAge: number;
+
+    try {
+      maxAge = parseExpiresIn(expiresIn);
+    } catch {
+      maxAge = 7 * 24 * 60 * 60 * 1000;
+    }
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/api/auth/refresh",
-      maxAge: this.getRefreshTokenMaxAge(),
+      maxAge,
     });
   }
 
@@ -259,29 +287,6 @@ export class AuthController {
       sameSite: "lax",
       path: "/api/auth/refresh",
     });
-  }
-
-  /**
-   * Get refresh token max age in milliseconds
-   */
-  private getRefreshTokenMaxAge(): number {
-    const expiresIn = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
-    const units: { [key: string]: number } = {
-      s: 1000,
-      m: 60 * 1000,
-      h: 60 * 60 * 1000,
-      d: 24 * 60 * 60 * 1000,
-    };
-
-    const match = expiresIn.match(/^(\d+)([smhd])$/);
-    if (!match) {
-      return 7 * 24 * 60 * 60 * 1000; // Default 7 days
-    }
-
-    const value = parseInt(match[1]);
-    const unit = match[2];
-
-    return value * units[unit];
   }
 
   /**

@@ -5,6 +5,7 @@ import { UserRepository } from "../repositories/user.repository";
 import { RefreshTokenRepository } from "../repositories/refreshToken.repository";
 import { User } from "../entities/User";
 import { RefreshToken } from "../entities/RefreshToken";
+import { parseExpiresIn } from "../utils/parse-expires-in";
 
 // Types for AuthService
 // Reuse purpose
@@ -43,8 +44,10 @@ export class AuthService {
    * Returns access token and refresh token
    */
   async login(email: string, password: string): Promise<LoginResponse> {
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Find user by email
-    const user = await this.userRepo.findByEmail(email);
+    const user = await this.userRepo.findByEmail(normalizedEmail);
     if (!user) {
       throw new Error("Invalid credentials");
     }
@@ -66,8 +69,10 @@ export class AuthService {
    * Register a new user
    */
   async register(name: string, email: string, password: string): Promise<LoginResponse> {
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Check if user already exists
-    const existingUser = await this.userRepo.findByEmail(email);
+    const existingUser = await this.userRepo.findByEmail(normalizedEmail);
     if (existingUser) {
       throw new Error("User already exists");
     }
@@ -76,7 +81,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = new User(email, name, hashedPassword);
+    const user = new User(normalizedEmail, name, hashedPassword);
     const savedUser = await this.userRepo.save(user);
 
     // Generate tokens
@@ -197,7 +202,7 @@ export class AuthService {
 
     // Calculate expiration date if not provided
     if (!expiresAt) {
-      const expiresInMs = this.parseExpiresIn(this.jwtRefreshExpiresIn);
+      const expiresInMs = parseExpiresIn(this.jwtRefreshExpiresIn);
       expiresAt = new Date(Date.now() + expiresInMs);
     }
 
@@ -214,28 +219,6 @@ export class AuthService {
    */
   private hashToken(token: string): string {
     return crypto.createHash("sha256").update(token).digest("hex");
-  }
-
-  /**
-   * Parse expiration string to milliseconds
-   */
-  private parseExpiresIn(expiresIn: string): number {
-    const units: { [key: string]: number } = {
-      s: 1000,
-      m: 60 * 1000,
-      h: 60 * 60 * 1000,
-      d: 24 * 60 * 60 * 1000,
-    };
-
-    const match = expiresIn.match(/^(\d+)([smhd])$/);
-    if (!match) {
-      throw new Error("Invalid expiration format");
-    }
-
-    const value = parseInt(match[1]);
-    const unit = match[2];
-
-    return value * units[unit];
   }
 
   /**
