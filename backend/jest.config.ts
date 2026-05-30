@@ -11,6 +11,16 @@ const config: Config = {
   clearMocks: true,
   coverageDirectory: "coverage",
   collectCoverageFrom: ["src/services/**/*.ts", "src/middlewares/**/*.ts"],
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        outputDirectory: 'reports',
+        outputName: 'jest-junit.xml',
+      }
+    ]
+  ]
 };
 
 export default config;
