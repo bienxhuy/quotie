@@ -154,6 +154,7 @@ export default function QuotePage() {
             </span>
             <Button
               type="button"
+              id="new-quote-button"
               onClick={() => {
                 setCreateError(null);
                 setIsComposerOpen(true);
@@ -165,6 +166,7 @@ export default function QuotePage() {
             </Button>
             <Button
               type="button"
+              id="refresh-button"
               onClick={reload}
               disabled={isLoading}
               className="h-9 rounded-xl border border-white/15 bg-white/5 text-xs font-semibold text-white/80 transition-all hover:border-cyan-400/40 hover:text-white"
