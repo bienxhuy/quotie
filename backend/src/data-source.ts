@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import dotenv from "dotenv";
+import path from "path";
 
 import { User } from "./entities/User";
 import { RefreshToken } from "./entities/RefreshToken";
@@ -18,5 +19,5 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: process.env.NODE_ENV === "development",
   entities: [User, RefreshToken, Quote],
-  migrations: ["src/migrations/*.ts"],
+  migrations: [path.join(__dirname, "migrations/*.{ts,js}")],
 });
