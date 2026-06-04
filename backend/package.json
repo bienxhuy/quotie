@@ -16,7 +16,7 @@
     "migration:generate": "npm run typeorm -- migration:generate src/migrations/Migration -d src/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
-    "db:seed": "docker exec -i backend-postgres psql -U postgres -d demosutdb < ./db/seed.sql"
+    "db:seed": "docker exec -i db-postgres-1 psql -U postgres -d demosutdb < ./db/seed.sql"
   },
   "dependencies": {
     "@types/bcrypt": "^6.0.0",
