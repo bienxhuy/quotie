@@ -26,7 +26,7 @@ export const authenticate = (authService: AuthService) => {
       const payload = authService.verifyAccessToken(token);
 
       // Attach user info to request
-      (req as any).user = payload;
+      (req as any).user = null;
 
       next();
     } catch (error) {
