@@ -1,6 +1,6 @@
 ### Quotie
 
-This is a demo application serving as a part of a bigger project.
+This is a demo application serving as a part of a bigger project (ATI).
 
 Tech stack: ExpressJS + ReactJS + PosgreSQL
 
