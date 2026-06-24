@@ -15,5 +15,5 @@ volumes:
   pg_data:
 
 networks:
-  devtest-container-stack_default:
+  akiro-persist-containers_default:
     external: true
