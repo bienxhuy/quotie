@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:16
     networks:
-      - devtest-container-stack_default
+      - akiro-persist-containers_default
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
